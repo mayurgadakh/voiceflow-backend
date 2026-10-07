@@ -13,7 +13,8 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     return;
   }
   if (err instanceof ZodError) {
-    res.status(400).json({ error: { code: "VALIDATION_ERROR", message: err.message } });
+    const message = err.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
+    res.status(400).json({ error: { code: "VALIDATION_ERROR", message } });
     return;
   }
   logger.error({ err }, "Unhandled error");

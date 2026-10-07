@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -9,19 +8,20 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String     @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean    @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
   role          String?
-  banned        Boolean?  @default(false)
+  banned        Boolean?   @default(false)
   banReason     String?
   banExpires    DateTime?
   sessions      Session[]
   accounts      Account[]
+  feedback      Feedback[]
 
   @@unique([email])
   @@map("user")
@@ -74,4 +74,74 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+enum FeedbackStatus {
+  UPLOADING
+  UPLOADED
+  PROCESSING
+  COMPLETED
+  FAILED
+  EXPIRED
+}
+
+model Feedback {
+  id            String             @id @default(uuid()) @db.Uuid
+  userId        String
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consentAt     DateTime
+  audioPath     String             @unique
+  mimeType      String
+  sizeBytes     Int
+  durationMs    Int
+  languageHint  String?
+  status        FeedbackStatus     @default(UPLOADING)
+  attempt       Int                @default(1)
+  errorCode     String?
+  createdAt     DateTime           @default(now())
+  completedAt   DateTime?
+  transcription Transcription?
+  analysis      SentimentAnalysis?
+
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+  @@map("feedback")
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  MIXED
+}
+
+model Transcription {
+  id           String   @id @default(uuid()) @db.Uuid
+  feedbackId   String   @unique @db.Uuid
+  feedback     Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  languageCode String?
+  languageProb Float?
+  originalText String
+  englishText  String
+  model        String
+  createdAt    DateTime @default(now())
+
+  @@map("transcription")
+}
+
+model SentimentAnalysis {
+  id            String    @id @default(uuid()) @db.Uuid
+  feedbackId    String    @unique @db.Uuid
+  feedback      Feedback  @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+  label         Sentiment
+  score         Float
+  summary       String
+  topics        String[]
+  urgent        Boolean   @default(false)
+  model         String
+  promptVersion String
+  createdAt     DateTime  @default(now())
+
+  @@index([label])
+  @@map("sentiment_analysis")
 }

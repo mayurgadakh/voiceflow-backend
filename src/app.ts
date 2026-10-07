@@ -3,9 +3,12 @@ import express from "express";
 import helmet from "helmet";
 import { pinoHttp } from "pino-http";
 import { toNodeHandler } from "better-auth/node";
+import { serve } from "inngest/express";
 import { auth } from "./config/auth.js";
 import { env } from "./config/env.js";
 import { logger } from "./config/logger.js";
+import { inngest } from "./inngest/client.js";
+import { functions } from "./inngest/index.js";
 import { errorHandler, notFound } from "./middleware/error.middleware.js";
 import { apiRouter } from "./routes/index.js";
 import { healthRouter } from "./routes/health.routes.js";
@@ -30,7 +33,10 @@ app.use(
 // Better Auth reads the raw request body, so it must come before express.json()
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
-app.use(express.json());
+// Inngest signs its own requests, and step results can exceed the default body limit
+app.use("/api/inngest", express.json({ limit: "4mb" }), serve({ client: inngest, functions }));
+
+app.use(express.json({ limit: "100kb" }));
 app.use("/health", healthRouter);
 app.use("/api", apiRouter);
 app.use("/", rootRouter)

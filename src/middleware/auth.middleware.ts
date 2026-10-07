@@ -22,3 +22,9 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction) {
   if (req.user?.role !== "admin") throw new AppError(403, "FORBIDDEN", "Admins only");
   next();
 }
+
+// Admins review feedback, they do not submit it
+export function requireCustomer(req: Request, _res: Response, next: NextFunction) {
+  if (req.user?.role === "admin") throw new AppError(403, "FORBIDDEN", "Admins cannot submit feedback");
+  next();
+}
