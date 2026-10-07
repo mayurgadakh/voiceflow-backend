@@ -37,3 +37,6 @@ app.use("/", rootRouter)
 
 app.use(notFound);
 app.use(errorHandler);
+
+// Vercel uses this module as the serverless entrypoint and requires a default export
+export default app;
