@@ -29,9 +29,9 @@ const speech = {
   englishText: "The food was not good",
   languageCode: "hi-IN",
   languageProb: 0.9,
-  model: "saaras:v3",
+  model: "saaras:v4",
 };
-const sentiment: Awaited<ReturnType<typeof analyseSentiment>> = { label: "NEGATIVE", score: -0.8, summary: "Unhappy with the food", topics: ["food quality"], urgent: false, model: "m", promptVersion: "v2" };
+const sentiment: Awaited<ReturnType<typeof analyseSentiment>> = { label: "NEGATIVE", score: -0.8, summary: "Unhappy with the food", topics: ["food quality"], urgent: false, model: "m", promptVersion: "v3" };
 
 beforeEach(() => {
   prismaMock.feedback.updateMany.mockResolvedValue({ count: 1 });

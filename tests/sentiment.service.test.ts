@@ -13,7 +13,7 @@ describe("analyseSentiment", () => {
   it("returns the model's result with the model name and prompt version", async () => {
     modelSays({ ...base, label: "POSITIVE", score: 0.9 });
     const result = await analyseSentiment("Lovely food");
-    expect(result).toMatchObject({ label: "POSITIVE", score: 0.9, model: "openai/gpt-4o-mini", promptVersion: "v2" });
+    expect(result).toMatchObject({ label: "POSITIVE", score: 0.9, model: "openai/gpt-4o-mini", promptVersion: "v3" });
   });
 
   describe("keeps the score and the label in agreement", () => {

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { env } from "../config/env.js";
 import { logger } from "../config/logger.js";
 
-export const PROMPT_VERSION = "v2";
+export const PROMPT_VERSION = "v3";
 
 // A fixed list, because free-text topics fragment the admin charts
 const TOPICS = [
@@ -16,6 +16,8 @@ const TOPICS = [
   "staff behaviour",
   "hygiene",
   "order accuracy",
+  "missing items",
+  "portion size",
   "other",
 ] as const;
 
@@ -27,7 +29,11 @@ const sentimentSchema = z.object({
     .max(1)
     .describe("Polarity, not confidence: -1 is very negative, 0 is neutral, +1 is very positive. It must agree with the label"),
   summary: z.string().describe("One sentence, at most 25 words"),
-  topics: z.array(z.enum(TOPICS)),
+  topics: z
+    .array(z.enum(TOPICS))
+    .describe(
+      "Only topics the customer actually raises. food quality: taste, temperature, freshness. order accuracy: wrong items. missing items: things left out, such as cutlery or sauces. portion size: how much food. Use other only when nothing fits",
+    ),
   urgent: z.boolean().describe("True for safety, health or serious complaint issues"),
 });
 

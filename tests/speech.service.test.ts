@@ -32,7 +32,7 @@ describe("transcribe", () => {
       englishText: "The food was not good",
       languageCode: "hi-IN",
       languageProb: 0.93,
-      model: "saaras:v3",
+      model: "saaras:v4",
     });
     const modes = fetchSpy.mock.calls.map((call: [unknown, RequestInit]) => (call[1].body as FormData).get("mode"));
     expect(modes.sort()).toEqual(["transcribe", "translate"]);

@@ -3,8 +3,8 @@ import { env } from "../config/env.js";
 
 const SARVAM_URL = "https://api.sarvam.ai/speech-to-text";
 const TIMEOUT_MS = 20_000;
-// Sarvam documents `mode` (needed for the English translation) for saaras:v3 only
-const MODEL = "saaras:v3";
+
+const MODEL = "saaras:v4";
 
 export type Speech = {
   originalText: string;

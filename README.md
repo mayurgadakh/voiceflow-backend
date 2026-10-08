@@ -7,6 +7,7 @@ It is a REST API built with Express 5 and TypeScript. Audio never passes through
 - App: https://voiceflow.mayurgadakh.dev
 - API: https://api.voiceflow.mayurgadakh.dev
 - Architecture, diagrams and design decisions: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Self-assessment (flow, bottlenecks, accuracy results, future work): [docs/SELF_ASSESSMENT.md](docs/SELF_ASSESSMENT.md)
 
 ## Contents
 
@@ -34,7 +35,7 @@ It is a REST API built with Express 5 and TypeScript. Audio never passes through
 | Auth | Better Auth (email and password, `admin` plugin) |
 | Database | PostgreSQL through Prisma 7 with the `pg` adapter |
 | Audio storage | Any S3-compatible service (AWS S3, Supabase Storage, Cloudflare R2, MinIO) |
-| Speech to text | Sarvam `saaras:v3` (Indian languages and English) |
+| Speech to text | Sarvam `saaras:v4` (Indian languages and English) |
 | Sentiment | Vercel AI SDK with OpenRouter, default model `openai/gpt-4o-mini` |
 | Background jobs | Inngest, served from Express at `/api/inngest` |
 | Email | Resend |
@@ -227,6 +228,7 @@ scripts/
 tests/                    Vitest tests, fakes in helpers/
 docs/
   ARCHITECTURE.md         Diagrams and design decisions
+  SELF_ASSESSMENT.md      Flow, bottlenecks, accuracy results, planned work
 ```
 
 Requests flow `routes -> controllers -> services`. Controllers do not touch the database, and services do not know about Express.
