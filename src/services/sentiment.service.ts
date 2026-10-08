@@ -44,18 +44,6 @@ function alignScore(label: z.infer<typeof sentimentSchema>["label"], score: numb
 export async function analyseSentiment(englishText: string): Promise<Sentiment> {
   const model = env.SENTIMENT_MODEL;
 
-  if (env.MOCK_SPEECH) {
-    return {
-      label: "MIXED",
-      score: 0,
-      summary: "Good food but late delivery",
-      topics: ["food quality", "delivery time"],
-      urgent: false,
-      model: "mock",
-      promptVersion: PROMPT_VERSION,
-    };
-  }
-
   const openrouter = createOpenRouter({ apiKey: env.OPENROUTER_API_KEY });
   try {
     const { output } = await generateText({

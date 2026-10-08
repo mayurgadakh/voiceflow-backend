@@ -86,24 +86,29 @@ enum FeedbackStatus {
 }
 
 model Feedback {
-  id            String             @id @default(uuid()) @db.Uuid
-  userId        String
-  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  consentAt     DateTime
-  audioPath     String             @unique
-  mimeType      String
-  sizeBytes     Int
-  durationMs    Int
-  languageHint  String?
-  status        FeedbackStatus     @default(UPLOADING)
-  attempt       Int                @default(1)
-  errorCode     String?
-  createdAt     DateTime           @default(now())
-  completedAt   DateTime?
-  transcription Transcription?
-  analysis      SentimentAnalysis?
+  id             String             @id @default(uuid()) @db.Uuid
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consentAt      DateTime
+  audioPath      String             @unique
+  mimeType       String
+  sizeBytes      Int
+  durationMs     Int
+  languageHint   String?
+  status         FeedbackStatus     @default(UPLOADING)
+  attempt        Int                @default(1)
+  errorCode      String?
+  createdAt      DateTime           @default(now())
+  // Moves on every status change, so the cleanup job can tell how long a row has been waiting
+  updatedAt      DateTime           @default(now()) @updatedAt
+  completedAt    DateTime?
+  // Set once the audio file is deleted (retention period, or an upload that never finished)
+  audioDeletedAt DateTime?
+  transcription  Transcription?
+  analysis       SentimentAnalysis?
 
   @@index([status, createdAt])
+  @@index([status, updatedAt])
   @@index([userId, createdAt])
   @@map("feedback")
 }

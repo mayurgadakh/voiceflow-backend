@@ -50,10 +50,13 @@ export async function getFeedback(id: string) {
 }
 
 export async function getAudioUrl(id: string) {
-  const feedback = await prisma.feedback.findUnique({ where: { id }, select: { audioPath: true } });
+  const feedback = await prisma.feedback.findUnique({ where: { id }, select: { audioPath: true, audioDeletedAt: true } });
   if (!feedback) throw new AppError(404, "NOT_FOUND", "Recording not found");
-  // Audio is deleted after the retention period, so the row can outlive the file
-  if ((await getObjectSize(feedback.audioPath)) === null) throw new AppError(404, "AUDIO_REMOVED", "Audio has been removed");
+  // Audio is deleted after the retention period, so the row can outlive the file. The file check
+  // also covers a deletion the cleanup job has not recorded yet
+  if (feedback.audioDeletedAt || (await getObjectSize(feedback.audioPath)) === null) {
+    throw new AppError(404, "AUDIO_REMOVED", "Audio has been removed");
+  }
   return { url: await createPlaybackUrl(feedback.audioPath), expiresIn: 60 };
 }
 

@@ -27,7 +27,7 @@ async function callSarvam(audio: Uint8Array, mimeType: string, mode: "transcribe
   try {
     res = await fetch(SARVAM_URL, {
       method: "POST",
-      headers: { "api-subscription-key": env.SARVAM_API_KEY! },
+      headers: { "api-subscription-key": env.SARVAM_API_KEY },
       body: form,
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
@@ -44,16 +44,6 @@ async function callSarvam(audio: Uint8Array, mimeType: string, mode: "transcribe
 
 /** Transcribes in the original language and translates to English, in parallel. */
 export async function transcribe(audio: Uint8Array, mimeType: string, languageHint: string | null): Promise<Speech> {
-  if (env.MOCK_SPEECH) {
-    return {
-      originalText: "खाना बहुत अच्छा था लेकिन डिलीवरी में देर हुई",
-      englishText: "The food was very good but the delivery was late",
-      languageCode: "hi-IN",
-      languageProb: 0.98,
-      model: "mock",
-    };
-  }
-
   const language = languageHint ?? "unknown";
   const [original, english] = await Promise.all([
     callSarvam(audio, mimeType, "transcribe", language),

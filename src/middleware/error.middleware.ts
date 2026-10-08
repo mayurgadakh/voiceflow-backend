@@ -17,6 +17,18 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
     res.status(400).json({ error: { code: "VALIDATION_ERROR", message } });
     return;
   }
+  // Client mistakes raised by Express itself, such as malformed JSON (400) or a body over the limit (413)
+  const status = (err as { status?: unknown }).status;
+  if (typeof status === "number" && status >= 400 && status < 500) {
+    const tooLarge = status === 413;
+    res.status(status).json({
+      error: {
+        code: tooLarge ? "PAYLOAD_TOO_LARGE" : "BAD_REQUEST",
+        message: tooLarge ? "Request body is too large" : "The request could not be read",
+      },
+    });
+    return;
+  }
   logger.error({ err }, "Unhandled error");
   res.status(500).json({ error: { code: "INTERNAL_ERROR", message: "Something went wrong" } });
 };

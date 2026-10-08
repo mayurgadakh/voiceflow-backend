@@ -18,17 +18,12 @@ const envSchema = z
     S3_ACCESS_KEY_ID: z.string().min(1),
     S3_SECRET_ACCESS_KEY: z.string().min(1),
     S3_FORCE_PATH_STYLE: z.stringbool().default(false),
-    SARVAM_API_KEY: z.string().min(1).optional(),
-    OPENROUTER_API_KEY: z.string().min(1).optional(),
+    SARVAM_API_KEY: z.string().min(1),
+    OPENROUTER_API_KEY: z.string().min(1),
     SENTIMENT_MODEL: z.string().min(1).default("openai/gpt-4o-mini"),
-    // Use fixtures instead of calling Sarvam and the LLM
-    MOCK_SPEECH: z.stringbool().default(false),
     // Production only. The local Inngest dev server needs neither
     INNGEST_EVENT_KEY: z.string().min(1).optional(),
     INNGEST_SIGNING_KEY: z.string().min(1).optional(),
-  })
-  .refine((e) => e.MOCK_SPEECH || (e.SARVAM_API_KEY && e.OPENROUTER_API_KEY), {
-    message: "SARVAM_API_KEY and OPENROUTER_API_KEY are required unless MOCK_SPEECH=true",
   });
 
 export const env = envSchema.parse(process.env);

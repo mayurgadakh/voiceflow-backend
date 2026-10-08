@@ -12,6 +12,9 @@ export const processFeedback = inngest.createFunction(
     id: "process-feedback",
     triggers: [{ event: "feedback/uploaded" }],
     retries: 3,
+    // A rescued or duplicated event must never run beside the original. The second one waits,
+    // then finds the item already handled and stops
+    concurrency: { limit: 1, key: "event.data.feedbackId" },
     // Each run makes two Sarvam calls, and the starter plan allows 60 requests a minute
     throttle: { limit: 25, period: "1m" },
     onFailure: async ({ event, error }) => {
